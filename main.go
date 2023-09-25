@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/JohnmaniDas/custom-metrics/middleware"
-	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
 // Config holds the plugin configuration.
@@ -24,6 +23,6 @@ type CustomMetrics struct {
 }
 
 // New creates a new plugin instance.
-func New(ctx context.Context, next http.Handler, conf *dynamic.Middleware, name string) (http.Handler, error) {
-	return middleware.New(ctx, next, conf, name)
+func New(ctx context.Context, next http.Handler, cfg *Config, name string) (http.Handler, error) {
+	return middleware.New(ctx, next, cfg, name)
 }
