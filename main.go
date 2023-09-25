@@ -1,14 +1,10 @@
 package main
 
-
-module github.com/JohnmaniDas/custom-metrics
-
-
 import (
 	"context"
-    "net/http"
+	"net/http"
 
-    "./middleware" // Update this import path to match your actual directory structure
+	"./middleware" // Update this import path to match your actual directory structure
 	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
