@@ -2,27 +2,36 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 
-	"github.com/JohnmaniDas/custom-metrics/middleware"
+	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
-// Config holds the plugin configuration.
-type Config struct{}
-
-// CreateConfig creates and initializes the plugin configuration.
-func CreateConfig() *Config {
-	return &Config{}
-}
-
-// CustomMetrics holds a plugin instance.
 type CustomMetrics struct {
 	next http.Handler
 	name string
 	conf *Config
 }
 
-// New creates a new plugin instance.
-func New(ctx context.Context, next http.Handler, cfg *Config, name string) (http.Handler, error) {
-	return middleware.New(ctx, next, cfg, name)
+type Config struct{}
+
+func CreateConfig() *Config {
+	return &Config{}
+}
+
+func New(ctx context.Context, next http.Handler, conf *dynamic.Middleware, name string) (http.Handler, error) {
+	return &CustomMetrics{
+		next: next,
+		name: name,
+		conf: CreateConfig(),
+	}, nil
+}
+
+func (c *CustomMetrics) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Log information about the incoming request.
+	log.Printf("Received request: %s %s", r.Method, r.URL.Path)
+
+	// Call the next handler in the chain.
+	c.next.ServeHTTP(w, r)
 }
