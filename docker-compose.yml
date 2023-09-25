@@ -21,7 +21,7 @@ services:
       - --log.level=DEBUG
       - --api
       - --providers.file.watch=true
-      - --experimental.localplugins.custom-metrics.modulename=github.com/JohnmaniDas/custom-metrics
+      - --experimental.localplugins.custommetrics.modulename=github.com/JohnmaniDas/custom-metrics
     labels:
       - traefik.enable=true
       - traefik.http.routers.dashboard.entrypoints=dashboard
@@ -30,20 +30,20 @@ services:
       - traefik.http.middlewares.dashboard-redirect.redirectregex.regex=^http(s)?:\\/\\/([^\\/]+)\\/?$$
       - traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=http$$1://$$2/dashboard
       - traefik.http.routers.dashboard.middlewares=dashboard-redirect
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.enabled=true
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.loglevel=DEBUG
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.alwaysallowed.ip=::1,127.0.0.1
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.rules.maxretries=4
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.rules.findtime=2m
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.rules.bantime=5m
-      - traefik.http.middlewares.custom-metrics.plugin.custom-metrics.rules.response.statuscodes=200
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.enabled=true
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.loglevel=DEBUG
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.alwaysallowed.ip=::1,127.0.0.1
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.rules.maxretries=4
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.rules.findtime=2m
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.rules.bantime=5m
+      - traefik.http.middlewares.custommetrics.plugin.custommetrics.rules.response.statuscodes=200
   whoami:
     image: containous/whoami
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.entrypoints=http
       - traefik.http.routers.whoami.rule=PathPrefix("/")
-      - traefik.http.routers.whoami.middlewares=custom-metrics
+      - traefik.http.routers.whoami.middlewares=custommetrics
       - traefik.http.services.whoami.loadbalancer.server.port=80
   device-api:
     image: device-api:1.0
@@ -55,7 +55,7 @@ services:
       - "traefik.http.routers.device-api.rule=Host(`device-api.local`)"
       - "traefik.http.routers.device-api.entrypoints=web"
       - "traefik.http.services.device-api.loadbalancer.server.port=8025"
-      - "traefik.http.routers.device-api.middlewares=custom-metrics"
+      - "traefik.http.routers.device-api.middlewares=custommetrics"
   stream-api:
     image: stream-api:1.0
     container_name: stream-api
@@ -66,7 +66,7 @@ services:
       - "traefik.http.routers.stream-api.rule=Host(`stream-api.local`)"
       - "traefik.http.routers.stream-api.entrypoints=web"
       - "traefik.http.services.stream-api.loadbalancer.server.port=8023"
-      - "traefik.http.routers.stream-api.middlewares=custom-metrics"
+      - "traefik.http.routers.stream-api.middlewares=custommetrics"
 
   video-api:
     image: video-api:1.0
@@ -78,7 +78,7 @@ services:
       - "traefik.http.routers.video-api.rule=Host(`video-api.local`)"
       - "traefik.http.routers.video-api.entrypoints=web"
       - "traefik.http.services.video-api.loadbalancer.server.port=8024"
-      - "traefik.http.routers.video-api.middlewares=custom-metrics"
+      - "traefik.http.routers.video-api.middlewares=custommetrics"
 
 networks:
   web:

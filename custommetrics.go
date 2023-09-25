@@ -1,4 +1,4 @@
-package custommetrics
+package traefik_plugin_custommetrics
 
 import (
 	"context"
