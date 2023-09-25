@@ -9,7 +9,7 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - .:/plugins-local/src/github.com/juitde/traefik-plugin-fail2ban
+      - .:/plugins-local/src/github.com/JohnmaniDas/custom-metrics
     command:
       - --api.insecure=true
       - --providers.docker=true
@@ -22,7 +22,7 @@ services:
       - --log.level=DEBUG
       - --api
       - --providers.file.watch=true
-      - --experimental.localplugins.fail2ban.modulename=github.com/juitde/traefik-plugin-fail2ban
+      - --experimental.localplugins.fail2ban.modulename=github.com/JohnmaniDas/custom-metrics
     labels:
       - traefik.enable=true
       - traefik.http.routers.dashboard.entrypoints=dashboard
