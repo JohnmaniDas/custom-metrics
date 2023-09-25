@@ -1,7 +1,13 @@
 package main
 
-import "fmt"
+import (
+	// ... other imports
+	"github.com/traefik/traefik/v2/pkg/config/dynamic"
+)
 
-func main() {
-	fmt.Println("Hello, world!")
+func init() {
+	// Register your plugin type
+	dynamic.Add("customMetrics", func() interface{} {
+		return &CustomMetricsMiddleware{}
+	})
 }
