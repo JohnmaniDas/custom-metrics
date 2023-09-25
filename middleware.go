@@ -1,21 +1,22 @@
 package middleware
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
 type CustomMetricsMiddleware struct {
 	next     http.Handler
-	registry *prometheus.Registry
 	requests prometheus.Counter
 	errors   prometheus.Counter
 	duration prometheus.Summary
 }
 
-func NewCustomMetricsMiddleware() *CustomMetricsMiddleware {
+func New(ctx context.Context, next http.Handler, config dynamic.Middleware, name string) (http.Handler, error) {
 	registry := prometheus.NewRegistry()
 
 	requests := prometheus.NewCounter(prometheus.CounterOpts{
@@ -36,12 +37,11 @@ func NewCustomMetricsMiddleware() *CustomMetricsMiddleware {
 	registry.MustRegister(requests, errors, duration)
 
 	return &CustomMetricsMiddleware{
-		next:     nil,
-		registry: registry,
+		next:     next,
 		requests: requests,
 		errors:   errors,
 		duration: duration,
-	}
+	}, nil
 }
 
 func (m *CustomMetricsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -58,8 +58,4 @@ func (m *CustomMetricsMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Reque
 	}
 
 	m.duration.Observe(float64(duration.Milliseconds()))
-}
-
-func (m *CustomMetricsMiddleware) SetNext(next http.Handler) {
-	m.next = next
 }
