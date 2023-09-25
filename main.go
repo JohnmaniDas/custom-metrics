@@ -1,11 +1,9 @@
-package main
+package custom_metrics
 
 import (
 	"context"
 	"log"
 	"net/http"
-
-	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
 type CustomMetrics struct {
@@ -20,7 +18,8 @@ func CreateConfig() *Config {
 	return &Config{}
 }
 
-func New(ctx context.Context, next http.Handler, conf *dynamic.Middleware, name string) (http.Handler, error) {
+// Note: We've changed the signature of the New function here
+func New(ctx context.Context, next http.Handler, name string) (http.Handler, error) {
 	return &CustomMetrics{
 		next: next,
 		name: name,

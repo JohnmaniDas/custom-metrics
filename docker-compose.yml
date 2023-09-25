@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.10.4
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - .:/plugins-local/src/github.com/juitde/traefik-plugin-fail2ban
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --api.dashboard=true
+      - --providers.docker.exposedbydefault=false
+      - --accesslog
+      - --log
+      - --log.level=DEBUG
+      - --api
+      - --providers.file.watch=true
+      - --experimental.localplugins.fail2ban.modulename=github.com/juitde/traefik-plugin-fail2ban
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.dashboard.entrypoints=dashboard
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.rule=PathPrefix("/")
+      - traefik.http.middlewares.dashboard-redirect.redirectregex.regex=^http(s)?:\\/\\/([^\\/]+)\\/?$$
+      - traefik.http.middlewares.dashboard-redirect.redirectregex.replacement=http$$1://$$2/dashboard
+      - traefik.http.routers.dashboard.middlewares=dashboard-redirect
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.enabled=true
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.loglevel=DEBUG
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.alwaysallowed.ip=::1,127.0.0.1
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.maxretries=4
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.findtime=2m
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.bantime=5m
+      - traefik.http.middlewares.fail2ban.plugin.fail2ban.rules.response.statuscodes=200
+  whoami:
+    image: containous/whoami
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.entrypoints=http
+      - traefik.http.routers.whoami.rule=PathPrefix("/")
+      - traefik.http.routers.whoami.middlewares=fail2ban
+      - traefik.http.services.whoami.loadbalancer.server.port=80
+  device-api:
+    image: device-api:1.0
+    container_name: device-api
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.device-api.rule=Host(`device-api.local`)"
+      - "traefik.http.routers.device-api.entrypoints=web"
+      - "traefik.http.services.device-api.loadbalancer.server.port=8025"
+      - "traefik.http.routers.device-api.middlewares=fail2ban"
+  stream-api:
+    image: stream-api:1.0
+    container_name: stream-api
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.stream-api.rule=Host(`stream-api.local`)"
+      - "traefik.http.routers.stream-api.entrypoints=web"
+      - "traefik.http.services.stream-api.loadbalancer.server.port=8023"
+      - "traefik.http.routers.stream-api.middlewares=fail2ban"
+
+  video-api:
+    image: video-api:1.0
+    container_name: video-api
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.video-api.rule=Host(`video-api.local`)"
+      - "traefik.http.routers.video-api.entrypoints=web"
+      - "traefik.http.services.video-api.loadbalancer.server.port=8024"
+      - "traefik.http.routers.video-api.middlewares=fail2ban"
+
+networks:
+  web:
+    external:
+      name: web
