@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"./middleware" // Update this import path to match your actual directory structure
+	"github.com/JohnmaniDas/custom-metrics/middleware"
 	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 

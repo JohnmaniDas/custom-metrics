@@ -1,4 +1,4 @@
-module custom-metrics
+module github.com/JohnmaniDas/custom-metrics
 
 go 1.17
 
