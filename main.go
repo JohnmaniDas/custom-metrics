@@ -7,7 +7,7 @@ import (
 
 func init() {
 	// Register your plugin type
-	dynamic.Add("customMetrics", func() interface{} {
+	dynamic.Add("custommetrics", func() interface{} {
 		return &CustomMetrics{}
 	})
 }
