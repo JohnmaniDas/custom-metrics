@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/JohnmaniDas/custom-metrics/middleware"
 	"github.com/traefik/traefik/v2/pkg/config/dynamic"
 )
 
@@ -25,5 +24,14 @@ type CustomMetrics struct {
 
 // New creates a new plugin instance.
 func New(ctx context.Context, next http.Handler, conf *dynamic.Middleware, name string) (http.Handler, error) {
-	return middleware.New(ctx, next, conf, name)
+	return &CustomMetrics{
+		next: next,
+		name: name,
+		conf: conf,
+	}, nil
+}
+
+// Implement the ServeHTTP method for your CustomMetrics type here.
+func (c *CustomMetrics) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Implement your middleware logic here.
 }
